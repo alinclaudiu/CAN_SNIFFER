@@ -6,7 +6,7 @@ I created this little tool for my own when trying to get some information off of
 
 It takes CAN-Messages in the following format:
 
-##START## <CAN_ID> % <DLC> % <Bit1> % <BIT2> % <BIT3> % <BIT4> % <BIT5> % <BIT6> % <BIT7> % <BIT8>##END## (you can see this in Engine.cs)
+##START## <CAN_ID> % <DLC> % <Bit_1> % <BIT2> % <BIT3> % <BIT4> % <BIT5> % <BIT6> % <BIT7> % <BIT8>##END## (you can see this in Engine.cs)
   
 I personally use an Arduino Nano in combination with a breakout board for the MCP2515 microcontroller. The arduino reads the data from the microcontroller via a SPI interface and then sends it over the Arduino's SerialPort to the WPF Application which processes the data.
 
