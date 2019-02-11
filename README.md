@@ -13,4 +13,4 @@ I personally use an Arduino Nano in combination with a breakout board for the MC
 You don't have to use this very combination though.
 As long as you manage to send the CAN-Data in the format mentioned above, you should be totally fine.
 
-For everybody who is going to use an Arduino as well: I added my .ino file as well for orientation.
+For everybody who is going to use an Arduino as well: I added my .ino file for your orientation.
