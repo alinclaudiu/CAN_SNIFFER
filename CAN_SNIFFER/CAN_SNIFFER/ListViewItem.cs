@@ -19,5 +19,6 @@ namespace CAN_SNIFFER
         public string Bit7 { get; set; }
         public string Bit8 { get; set; }
         public string Count { get; set; }
+        public string Data_changes { get; set; }
     }
 }

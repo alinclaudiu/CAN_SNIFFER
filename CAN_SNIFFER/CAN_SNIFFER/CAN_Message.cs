@@ -12,11 +12,13 @@ namespace CAN_SNIFFER
         public string DLC;
         public string[] canData;
         public int Count;
+        public int DataChanges;        
 
         public CAN_Message()
         {
-            canData = new string[8];
+            canData = new string[8];            
             Count = 1;
+            DataChanges = 0;
         }
 
         public CAN_Message(string id, string dlc, string[] data)

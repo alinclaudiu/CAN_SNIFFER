@@ -16,6 +16,10 @@ namespace CAN_SNIFFER
         public static int SelectedCOMBaudRate = -1;
 
         private static List<CAN_Message> allCANMessages;
+        private static List<CAN_Message> filteredCANMessages;
+        private static int FILTER_MAXCOUNT = -1;
+        private static int FILTER_MAXDATACHANGES = -1;
+        private static bool FILTERS_ACTIVE = false;
 
         static COMData comListener;
         static SerialPort serialPort;
@@ -40,6 +44,7 @@ namespace CAN_SNIFFER
             AvailableCOMBaudRates.Add(2000000);
 
             allCANMessages = new List<CAN_Message>();
+            filteredCANMessages = new List<CAN_Message>();
         }
 
         public static int StartCOM(COMData listener)
@@ -140,6 +145,7 @@ namespace CAN_SNIFFER
             if (data.StartsWith("##CanSPEED##"))
             {
                 data = data.Replace("##CanSPEED##", "");
+                data = data.Remove(data.LastIndexOf("kbps") + 4);
                 comListener.CAN_CanSpeed_Received(data);
             }
         }
@@ -154,6 +160,11 @@ namespace CAN_SNIFFER
                     temp.Count++;
                     temp.canData = msg.canData;
                     messageAlreadyThere = true;
+                   
+                    if (!Enumerable.SequenceEqual(temp.canData, msg.canData)) 
+                    {
+                        temp.DataChanges++;
+                    }
                 }
             }
             if (!messageAlreadyThere)
@@ -161,13 +172,89 @@ namespace CAN_SNIFFER
                 allCANMessages.Add(msg);
             }
 
-            comListener.CAN_MessageList_Update(allCANMessages);
+            if (!FILTERS_ACTIVE)
+            {
+                comListener.CAN_MessageList_Update(allCANMessages);
+            }
+            else
+            {
+                CalculateFilteredMessageList();
+                comListener.CAN_MessageList_Update(filteredCANMessages);
+            }
         }
 
         public static void ClearAllMessages()
         {
-            allCANMessages.Clear();
-            comListener.CAN_MessageList_Update(allCANMessages);
+            if (comListener != null)
+            {
+                allCANMessages.Clear();
+                comListener.CAN_MessageList_Update(allCANMessages);
+            }            
+        }
+
+        private static void CalculateFilteredMessageList()
+        {
+            filteredCANMessages.Clear();
+
+            if (FILTER_MAXDATACHANGES == -1 || FILTER_MAXCOUNT == -1)
+            {
+                if (FILTER_MAXDATACHANGES == -1)
+                {
+                    foreach (CAN_Message msg in allCANMessages)
+                    {
+                        if (msg.Count <= FILTER_MAXCOUNT)
+                        {
+                            filteredCANMessages.Add(msg);
+                        }
+                    }
+                }
+                if (FILTER_MAXCOUNT == -1)
+                {
+                    foreach (CAN_Message msg in allCANMessages)
+                    {
+                        if (msg.DataChanges <= FILTER_MAXDATACHANGES)
+                        {
+                            filteredCANMessages.Add(msg);
+                        }
+                    }
+                }
+                if (FILTER_MAXDATACHANGES == -1 && FILTER_MAXCOUNT == -1)
+                {
+                    foreach (CAN_Message msg in allCANMessages)
+                    {
+                        filteredCANMessages.Add(msg);
+                    }
+                }
+            }
+            else
+            {
+                foreach (CAN_Message msg in allCANMessages)
+                {
+                    if (msg.DataChanges <= FILTER_MAXDATACHANGES && msg.Count <= FILTER_MAXCOUNT)
+                    {
+                        filteredCANMessages.Add(msg);
+                    }
+                }
+            }                        
+        }
+
+        public static void ApplyFilter(int maxCount, int maxDataChanges)
+        {
+            FILTER_MAXCOUNT = maxCount;
+            FILTER_MAXDATACHANGES = maxDataChanges;
+            FILTERS_ACTIVE = true;
+        }
+
+        public static void UndoAllFilters()
+        {
+            FILTERS_ACTIVE = false;
+            FILTER_MAXCOUNT = -1;
+            FILTER_MAXDATACHANGES = -1;
+
+            if (comListener != null)
+            {
+                comListener.CAN_MessageList_Update(allCANMessages);
+            }
         }
     }
 

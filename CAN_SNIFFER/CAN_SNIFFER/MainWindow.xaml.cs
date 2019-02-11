@@ -127,7 +127,8 @@ namespace CAN_SNIFFER
                         Bit6 = msg.canData[5],
                         Bit7 = msg.canData[6],
                         Bit8 = msg.canData[7],
-                        Count = msg.Count.ToString()
+                        Count = msg.Count.ToString(),
+                        Data_changes = msg.DataChanges.ToString()
                     });
                 }
             }));
@@ -161,6 +162,43 @@ namespace CAN_SNIFFER
         private void button_ClearListViewData_Click(object sender, RoutedEventArgs e)
         {
             Engine.ClearAllMessages();
+        }
+
+        private void button_applyFilter_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string maxCountStr = textBox_maxCount.Text;
+                string maxDataChangesStr = textBox_MaxDataChanges.Text;
+                int maxCount = -1;
+                int maxDataChanges = -1;
+
+                if (!maxCountStr.Equals("unlimited"))
+                {
+                    maxCount = Convert.ToInt32(maxCountStr);                    
+                }
+                if (!maxDataChangesStr.Equals("unlimited"))
+                {
+                    maxDataChanges = Convert.ToInt32(maxDataChangesStr);
+                }
+
+                Engine.ApplyFilter(maxCount, maxDataChanges);
+
+                label_currentFilter.Content = "active";
+            }
+            catch (Exception ec)
+            {
+                textBox_maxCount.Text = "unlimited";
+                textBox_MaxDataChanges.Text = "unlimited";
+            }
+        }
+
+        private void button_undoAllFilters_Click(object sender, RoutedEventArgs e)
+        {
+            Engine.UndoAllFilters();
+            label_currentFilter.Content = "none";
+            textBox_maxCount.Text = "unlimited";
+            textBox_MaxDataChanges.Text = "unlimited";
         }
     }
 }

@@ -17,13 +17,34 @@
 
             </MenuItem>
         </Menu>
-        <Label Grid.Row="1" Content="COM Port" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="26" Width="62"/>
-        <ComboBox SelectedValuePath="Content" x:Name="comboBox_COMPorts" HorizontalAlignment="Left" Grid.Row="1" Margin="10,41,0,0" VerticalAlignment="Top" Width="120" Height="22" SelectionChanged="comboBox_COMPorts_selectionChanged"/>
-        <Label Content="COM Baud Rate" HorizontalAlignment="Left" Margin="179,10,0,0" Grid.Row="1" VerticalAlignment="Top"/>
-        <ComboBox SelectedValuePath="Content" x:Name="comboBox_baudRate" HorizontalAlignment="Left" Margin="179,41,0,0" Grid.Row="1" VerticalAlignment="Top" Width="120" SelectionChanged="comboBox_baudRate_selectionChanged"/>
-        <Label Content="CAN Speed:" HorizontalAlignment="Left" Margin="519,35,0,0" Grid.Row="1" VerticalAlignment="Top"/>
-        <Label x:Name="label_canSpeed" Content="-----" HorizontalAlignment="Left" Margin="519,53,0,0" Grid.Row="1" VerticalAlignment="Top" FontWeight="Bold" IsEnabled="False"/>
-        <Button x:Name="button_startStop" Content="Start" HorizontalAlignment="Left" Margin="326,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="188" Height="69" Background="#FF53B83D" FontSize="20" Click="button_startStop_Click"/>
+        <Grid Grid.Row="1" ShowGridLines="True">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="633*"/>
+                <ColumnDefinition Width="491*"/>
+                <ColumnDefinition Width="108*"/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Row="0" Grid.Column="0" Content="COM Port" HorizontalAlignment="Left" Margin="10,0,0,37" VerticalAlignment="Bottom" Height="26" Width="62"/>
+            <ComboBox SelectedValuePath="Content" x:Name="comboBox_COMPorts" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" Margin="10,0,0,10" VerticalAlignment="Bottom" Width="120" Height="22" SelectionChanged="comboBox_COMPorts_selectionChanged"/>
+            <Label Content="COM Baud Rate" HorizontalAlignment="Left" Margin="179,0,0,37" VerticalAlignment="Bottom" Grid.Column="0" Grid.Row="0"/>
+            <ComboBox SelectedValuePath="Content" x:Name="comboBox_baudRate" HorizontalAlignment="Left" Margin="179,0,0,10" Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom" Width="120" SelectionChanged="comboBox_baudRate_selectionChanged"/>
+            <Label Content="CAN Speed:" HorizontalAlignment="Left" Margin="531,0,0,29" Grid.Row="0" VerticalAlignment="Bottom" Grid.Column="0" />
+            <Label x:Name="label_canSpeed" Content="-----" HorizontalAlignment="Left" Margin="531,0,0,6" Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom" FontWeight="Bold" IsEnabled="False"/>
+            <Button x:Name="button_startStop" Content="Start" HorizontalAlignment="Left" Margin="326,0,0,9" Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom" Width="188" Height="69" Background="#FF53B83D" FontSize="20" Click="button_startStop_Click"/>
+            <Button x:Name="button_refreshCOMPorts" Content="Refresh" HorizontalAlignment="Left" Margin="96,0,0,34" Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom" Width="34" FontSize="8" Click="button_refreshCOMPorts_Click"/>
+            <Button x:Name="button_requestCanSpeed" Content="Request" HorizontalAlignment="Left" Margin="531,0,0,59" Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom" Width="75" Click="button_requestCanSpeed_Click" IsEnabled="False"/>
+            <Button x:Name="button_ClearListViewData" Content="Clear" HorizontalAlignment="Right" Margin="0,0,10,9" Grid.Row="0" Grid.Column="2" VerticalAlignment="Bottom" Width="75" Click="button_ClearListViewData_Click" />
+            <TextBox x:Name="textBox_MaxDataChanges" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="10,0,0,10" TextWrapping="Wrap" Text="unlimited" VerticalAlignment="Bottom" Width="120"/>
+            <Label Content="MaxDataChanges:" Grid.Column="1" HorizontalAlignment="Left" Margin="10,0,0,33" VerticalAlignment="Bottom" IsEnabled="False"/>
+            <Label Content="Filters" Grid.Column="1" HorizontalAlignment="Left" Margin="10,-1,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="18"/>
+            <Button x:Name="button_applyFilter" Content="Apply" Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,10,33" VerticalAlignment="Bottom" Width="75" Click="button_applyFilter_Click"/>
+            <Label Content="MaxCount:" Grid.Column="1" HorizontalAlignment="Left" Margin="146,0,0,33" VerticalAlignment="Bottom" IsEnabled="False"/>
+            <TextBox x:Name="textBox_maxCount" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="146,0,0,10" TextWrapping="Wrap" Text="unlimited" VerticalAlignment="Bottom" Width="120" RenderTransformOrigin="0.533,0.043"/>
+            <Label Content="Current filter: " Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,82,2" VerticalAlignment="Bottom" IsEnabled="False"/>
+            <Label x:Name="label_currentFilter" Content="none" Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,47,2" VerticalAlignment="Bottom" IsEnabled="False" FontWeight="Bold"/>
+            <Label Content="Settings" HorizontalAlignment="Left" Margin="10,-1,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="16"/>
+            <Label Content="Commands" Grid.Column="2" HorizontalAlignment="Left" Margin="10,-1,0,0" VerticalAlignment="Top" FontSize="16" FontWeight="Bold"/>
+            <Button x:Name="button_undoAllFilters" Content="Undo all filters" Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,10,56" VerticalAlignment="Bottom" Width="112" Click="button_undoAllFilters_Click"/>
+        </Grid>
         <ListView x:Name="listView_data" Height="auto" Margin="10" Grid.Row="2" Width="auto">
             <ListView.View>
                 <GridView>
@@ -38,12 +59,10 @@
                     <GridViewColumn Header="Bit7" Width="50" DisplayMemberBinding="{Binding Bit7}" />
                     <GridViewColumn Header="Bit8" Width="50" DisplayMemberBinding="{Binding Bit8}" />
                     <GridViewColumn Header="Count" Width="50" DisplayMemberBinding="{Binding Count}" />
+                    <GridViewColumn Header="Data changes" Width="100" DisplayMemberBinding="{Binding Data_changes}" />
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button x:Name="button_refreshCOMPorts" Content="Refresh" HorizontalAlignment="Left" Margin="96,17,0,0" Grid.Row="1" VerticalAlignment="Top" Width="34" FontSize="8" Click="button_refreshCOMPorts_Click"/>
-        <Button x:Name="button_requestCanSpeed" Content="Request" HorizontalAlignment="Left" Margin="519,10,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" Click="button_requestCanSpeed_Click" IsEnabled="False"/>
-        <Button x:Name="button_ClearListViewData" Content="Clear" HorizontalAlignment="Right" Margin="0,64,10,0" Grid.Row="1" VerticalAlignment="Bottom" Width="75" Click="button_ClearListViewData_Click"/>
 
     </Grid>
 </Window>
